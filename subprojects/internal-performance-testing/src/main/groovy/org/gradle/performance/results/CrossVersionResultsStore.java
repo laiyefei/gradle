@@ -126,7 +126,7 @@ public class CrossVersionResultsStore implements WritableResultsStore<CrossVersi
     private long insertExecution(Connection connection, CrossVersionPerformanceResults results) throws SQLException {
         String insertStatement = insertStatement("testExecution",
             "testId", "startTime", "endTime", "targetVersion", "testProject", "tasks", "args", "gradleOpts", "daemon", "operatingSystem",
-            "jvm", "vcsBranch", "vcsCommit", "channel", "host", "cleanTasks", "teamCityBuildId", "currentMedian", "baselineMedian", "diffConfidence");
+            "jvm", "vcsBranch", "vcsCommit", "channel", "host", "cleanTasks", "teamCityBuildId", "currentMedian", "baselineMedian", "diffConfidence", "testClass");
 
 
         try (PreparedStatement statement = connection.prepareStatement(insertStatement, Statement.RETURN_GENERATED_KEYS)) {
@@ -148,6 +148,7 @@ public class CrossVersionResultsStore implements WritableResultsStore<CrossVersi
             statement.setString(15, results.getHost());
             statement.setObject(16, toArray(results.getCleanTasks()));
             statement.setString(17, results.getTeamCityBuildId());
+            statement.setString(18, results.getTestClass());
 
             if (results.getBaselineVersions().size() == 1) {
                 MeasuredOperationList current = results.getCurrent();
@@ -156,13 +157,13 @@ public class CrossVersionResultsStore implements WritableResultsStore<CrossVersi
                 BigDecimal currentMedian = current.getTotalTime().getMedian().toUnits(Duration.MILLI_SECONDS).getValue();
                 BigDecimal baselineMedian = baseline.getTotalTime().getMedian().toUnits(Duration.MILLI_SECONDS).getValue();
                 BigDecimal diffConfidence = new BigDecimal(DataSeries.confidenceInDifference(current.getTotalTime(), baseline.getTotalTime()));
-                statement.setBigDecimal(18, currentMedian);
-                statement.setBigDecimal(19, baselineMedian);
-                statement.setBigDecimal(20, diffConfidence);
+                statement.setBigDecimal(19, currentMedian);
+                statement.setBigDecimal(20, baselineMedian);
+                statement.setBigDecimal(21, diffConfidence);
             } else {
-                statement.setBigDecimal(18, null);
                 statement.setBigDecimal(19, null);
                 statement.setBigDecimal(20, null);
+                statement.setBigDecimal(21, null);
             }
 
             statement.execute();

@@ -53,7 +53,7 @@ public class BaseCrossBuildResultsStore<R extends CrossBuildPerformanceResults> 
         try {
             db.withConnection((ConnectionAction<Void>) connection -> {
                 long executionId;
-                PreparedStatement statement = connection.prepareStatement("insert into testExecution(testId, testProject, startTime, endTime, versionUnderTest, operatingSystem, jvm, vcsBranch, vcsCommit, testGroup, resultType, channel, host, teamCityBuildId) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement statement = connection.prepareStatement("insert into testExecution(testId, testProject, startTime, endTime, versionUnderTest, operatingSystem, jvm, vcsBranch, vcsCommit, testGroup, resultType, channel, host, teamCityBuildId, testClass) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
                 try {
                     statement.setString(1, results.getTestId());
                     statement.setString(2, results.getTestProject());
@@ -69,6 +69,7 @@ public class BaseCrossBuildResultsStore<R extends CrossBuildPerformanceResults> 
                     statement.setString(12, results.getChannel());
                     statement.setString(13, results.getHost());
                     statement.setString(14, results.getTeamCityBuildId());
+                    statement.setString(15, results.getTestClass());
                     statement.execute();
                     ResultSet keys = statement.getGeneratedKeys();
                     keys.next();
